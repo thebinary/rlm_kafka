@@ -1,0 +1,24 @@
+kafka {
+      bootstrap-servers = "localhost:9092"
+      topic = "radius.acct.pg"
+
+      producer {
+      	#linger.ms = 10
+      }
+
+      $INCLUDE ${modconfdir}/kafka/default/jdbc/postgresql/messages.conf
+}
+
+# kafka kfk-ora {
+#       bootstrap-servers = "localhost:9092"
+#       topic = "radius.acct.ora"
+# 
+#       $INCLUDE ${modconfdir}/kafka/default/jdbc/oracle/messages.conf
+# }
+
+# kafka kfk-json {
+#       bootstrap-servers = "localhost:9092"
+#       topic = "radius.acct.example"
+# 
+#       $INCLUDE ${modconfdir}/kafka/examples/json/messages.conf
+# }

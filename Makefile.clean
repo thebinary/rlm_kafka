@@ -1,0 +1,11 @@
+TARGET		= rlm_kafka
+SRCS		= rlm_kafka.c
+HEADERS		= config.h
+RLM_CFLAGS	=
+RLM_LIBS	= 
+
+include ../rules.mak
+
+$(STATIC_OBJS): $(HEADERS)
+
+$(DYNAMIC_OBJS): $(HEADERS)
