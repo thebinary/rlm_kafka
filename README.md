@@ -3,7 +3,7 @@
 FreeRADIUS 3.x module to send accounting messages to Kafka Queue.
 
 ## Dependency
-This module is dependent on [librdkafka](https://github.com/confluentinc/librdkafka). So, it needs to be installed in the system prior to compiling and using this module.
+This module is dependent on [librdkafka](https://github.com/confluentinc/librdkafka) (tested with version `1.7.0`).  So, `librdkafka` needs to be installed in the system prior to compiling and using this module.
 
 ## Compilation and Installation
 
