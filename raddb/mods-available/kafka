@@ -2,8 +2,10 @@ kafka {
       bootstrap-servers = "localhost:9092"
       topic = "radius.acct.pg"
 
+      # Parameters to be set in section below are librdkafka configuration
+      # https://docs.confluent.io/platform/current/clients/librdkafka/html/md_CONFIGURATION.html
       producer-config {
-      	#linger.ms = 10
+      	# linger.ms = 10
       }
 
       $INCLUDE ${modconfdir}/kafka/default/jdbc/postgresql/messages.conf
