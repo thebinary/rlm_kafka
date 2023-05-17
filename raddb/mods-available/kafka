@@ -2,7 +2,7 @@ kafka {
       bootstrap-servers = "localhost:9092"
       topic = "radius.acct.pg"
 
-      producer {
+      producer-config {
       	#linger.ms = 10
       }
 

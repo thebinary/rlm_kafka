@@ -36,7 +36,7 @@ Configuration example:
 kafka {
     bootstrap-servers = "localhost:9092"
     topic = "radacct"
-    producer {
+    producer-config {
          ...
     }
     accounting {
@@ -78,7 +78,7 @@ static const CONF_PARSER stats_config[] = {
 static const CONF_PARSER module_config[] = {
   { "bootstrap-servers", FR_CONF_OFFSET(PW_TYPE_STRING | PW_TYPE_REQUIRED, rlm_kafka_t, bootstrap), NULL },
   { "topic", FR_CONF_OFFSET(PW_TYPE_STRING | PW_TYPE_REQUIRED, rlm_kafka_t, topic), NULL },
-  { "producer", FR_CONF_POINTER(PW_TYPE_SUBSECTION, NULL), (void const*) producer_config },
+  { "producer-config", FR_CONF_POINTER(PW_TYPE_SUBSECTION, NULL), (void const*) producer_config },
   { "accounting", FR_CONF_POINTER(PW_TYPE_SUBSECTION, NULL), (void const*) acct_config },
   { "statistics", FR_CONF_POINTER(PW_TYPE_SUBSECTION, NULL), (void const*) stats_config },
 
@@ -101,7 +101,7 @@ static int mod_instantiate(CONF_SECTION *conf, void *instance)
   char errstr[512];
   CONF_PAIR *cp = NULL;
   CONF_SECTION *cs = cf_section_sub_find(conf, "accounting");
-  CONF_SECTION *pc = cf_section_sub_find(conf, "producer");
+  CONF_SECTION *pc = cf_section_sub_find(conf, "producer-config");
   
   inst->accounting.ms = cf_section_sub_find(cs, "messages");
   
