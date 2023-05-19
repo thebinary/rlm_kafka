@@ -176,7 +176,7 @@ static rlm_rcode_t CC_HINT(nonnull) mod_accounting(UNUSED void *instance, UNUSED
   size_t len = strlen(message);
   
   rd_kafka_producev(inst->rk,
-		    inst->rkt,
+		    RD_KAFKA_V_RKT(inst->rkt),
 		    RD_KAFKA_V_MSGFLAGS(RD_KAFKA_MSG_F_COPY),
 		    RD_KAFKA_V_VALUE(message, len),
 		    RD_KAFKA_V_OPAQUE(NULL),
