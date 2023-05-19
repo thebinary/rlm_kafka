@@ -87,10 +87,11 @@ static const CONF_PARSER module_config[] = {
 
 static int stats_cb (rd_kafka_t *rk, char *json, size_t json_len,
 		     void *opaque) {
+  DEBUG3("rlm_kafka: stats callback");
   rlm_kafka_t *inst = opaque;
   FILE *fp = inst->stats_file;
 
-  fprintf(fp, "%s\n", json); 
+  fprintf(fp, "%s\n", json);
   fflush(fp);
   return 0;
 }
@@ -127,7 +128,7 @@ static int mod_instantiate(CONF_SECTION *conf, void *instance)
     DEBUG3("rlm_kafka: Registering statistics callback");
     rd_kafka_conf_set_stats_cb(inst->kconf, stats_cb);
   }
-  
+
   /* Search configuration items in producer conf_section
      and set the property of kafka producer */
   do {
@@ -145,7 +146,7 @@ static int mod_instantiate(CONF_SECTION *conf, void *instance)
   // Create Producer
   inst->rk = rd_kafka_new(RD_KAFKA_PRODUCER, inst->kconf, errstr, sizeof(errstr));
   if (!inst->rk) {
-    ERROR("Failed to create new producer: %s\n", errstr);
+    ERROR("rlm_kafka: Failed to create new producer: %s\n", errstr);
     return -1;
   }
   
@@ -183,11 +184,12 @@ static rlm_rcode_t CC_HINT(nonnull) mod_accounting(UNUSED void *instance, UNUSED
           RD_KAFKA_V_OPAQUE(NULL),
           RD_KAFKA_V_END);
   if (err) {
-    DEBUG3("Failed to produce to topic: %s: %s\n",
+    DEBUG3("rlm_kafka: Failed to produce to topic: %s: %s\n",
             inst->topic, rd_kafka_err2str(err));
   }
 
   /* non-blocking */
+  DEBUG3("rlm_kafka: polling kafka");
   rd_kafka_poll(inst->rk, 0);
 
   return RLM_MODULE_OK;
