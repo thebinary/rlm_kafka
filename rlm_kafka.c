@@ -163,6 +163,7 @@ static int mod_instantiate(CONF_SECTION *conf, void *instance)
 static rlm_rcode_t CC_HINT(nonnull) mod_accounting(UNUSED void *instance, UNUSED REQUEST *request)
 {
   rlm_kafka_t *inst = instance;
+  rd_kafka_resp_err_t err;
   char message[4096];
   char ref[25];
 
@@ -175,12 +176,16 @@ static rlm_rcode_t CC_HINT(nonnull) mod_accounting(UNUSED void *instance, UNUSED
   
   size_t len = strlen(message);
   
-  rd_kafka_producev(inst->rk,
-		    RD_KAFKA_V_RKT(inst->rkt),
-		    RD_KAFKA_V_MSGFLAGS(RD_KAFKA_MSG_F_COPY),
-		    RD_KAFKA_V_VALUE(message, len),
-		    RD_KAFKA_V_OPAQUE(NULL),
-		    RD_KAFKA_V_END);
+  err = rd_kafka_producev(inst->rk,
+          RD_KAFKA_V_RKT(inst->rkt),
+          RD_KAFKA_V_MSGFLAGS(RD_KAFKA_MSG_F_COPY),
+          RD_KAFKA_V_VALUE(message, len),
+          RD_KAFKA_V_OPAQUE(NULL),
+          RD_KAFKA_V_END);
+  if (err) {
+    DEBUG3("Failed to produce to topic: %s: %s\n",
+            inst->topic, rd_kafka_err2str(err));
+  }
 
   /* non-blocking */
   rd_kafka_poll(inst->rk, 0);
