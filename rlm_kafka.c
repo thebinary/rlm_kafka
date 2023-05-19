@@ -143,6 +143,13 @@ static int mod_instantiate(CONF_SECTION *conf, void *instance)
     }
   } while(cp != NULL);
   
+  DEBUG3("rlm_kafka: Kafka config:");
+  const char **arr;
+  size_t cnt;
+  arr = rd_kafka_conf_dump(inst->kconf, &cnt);
+  for (int i = 0; i < (int)cnt; i += 2)
+	  DEBUG3("rlm_kafka: \t%s = %s", arr[i], arr[i + 1]);
+
   // Create Producer
   inst->rk = rd_kafka_new(RD_KAFKA_PRODUCER, inst->kconf, errstr, sizeof(errstr));
   if (!inst->rk) {
