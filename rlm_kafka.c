@@ -138,7 +138,7 @@ static int mod_instantiate(CONF_SECTION *conf, void *instance)
       char const *value = cf_pair_value(cp);
       DEBUG3("rlm_kafka: Setting producer property '%s' as '%s'\n", attr, value);
       if(rd_kafka_conf_set(inst->kconf, attr, value, errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK) {
-	ERROR("rlm_kafka: property=%s, %s", attr, errstr);
+	      ERROR("rlm_kafka: property=%s, %s", attr, errstr);
       }
     }
   } while(cp != NULL);
