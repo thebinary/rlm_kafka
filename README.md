@@ -25,6 +25,14 @@ cd $FRADIUS_SRC && ./configure --with-modules=rlm_kafka
 ```
 
 - Compile and Install
+
+1. Case-1: If you are installing all FreeRADIUS from the same source directory
 ```sh
 make && make install
+```
+
+2. Case-2: If you are just installing the module to already installed FreeRADIUS instance. If the `rlm` modules are located in `/usr/lib/freeradius`
+```sh
+export RLM_MODULES_DIR=/usr/lib/freeradius
+make && cp build/lib/.libs/rlm_kafka.so $RLM_MODULES_DIR/
 ```
