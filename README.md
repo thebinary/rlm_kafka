@@ -1,5 +1,10 @@
 # rlm_kafka
+## Metadata
+<dl>
+  <dt>category</dt><dd>io</dd>
+</dl>
 
+## Summary
 FreeRADIUS 3.x module to send accounting messages to Kafka Queue.
 
 ## Dependency
