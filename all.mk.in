@@ -13,9 +13,9 @@ TGT_LDLIBS	:= @mod_ldflags@ -lrdkafka
 
 ifneq "$(TARGETNAME)" ""
 install: $(R)$(raddbdir)/mods-available/kafka $(R)$(modconfdir)/kafka
-	
-$(R)$(modconfdir)/kafka: | $(R)$(modconfdir) 
-	@$(INSTALL) -D -m 755 src/modules/rlm_kafka/raddb/mods-config/kafka $(R)$(modconfdir)/
+
+$(R)$(modconfdir)/kafka: src/modules/rlm_kafka/raddb/mods-config/kafka | $(R)$(modconfdir)
+	cp -r src/modules/rlm_kafka/raddb/mods-config/kafka $(R)$(modconfdir)/
 
 $(R)$(raddbdir)/mods-available/kafka: src/modules/rlm_kafka/raddb/mods-available/kafka | $(R)$(raddbdir)/mods-available
 	@$(INSTALL) -m 644 src/modules/rlm_kafka/raddb/mods-available/kafka $(R)$(raddbdir)/mods-available/
