@@ -41,6 +41,7 @@ kafka {
     }
     accounting {
        reference = "<packet type xlat>"
+       key = %{Acct-Unique-Session-Id}
        messages {
           start = "..."
           stop = "..."
@@ -174,7 +175,7 @@ static rlm_rcode_t CC_HINT(nonnull) mod_accounting(UNUSED void *instance, UNUSED
   char ref[25];
 
   radius_xlat(ref, sizeof(ref) - 1, request, inst->accounting.reference, NULL, NULL);
-  
+
   radius_xlat(key, sizeof(key) - 1, request, inst->accounting.key, NULL, NULL);
   DEBUG3("rlm_kafka: message key=%s\n", key);
 
