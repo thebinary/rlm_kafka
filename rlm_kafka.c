@@ -170,9 +170,9 @@ static rlm_rcode_t CC_HINT(nonnull) mod_accounting(UNUSED void *instance, UNUSED
 {
   rlm_kafka_t *inst = instance;
   rd_kafka_resp_err_t err;
-  char key[1024];
-  char message[4096];
-  char ref[25];
+  char key[RLM_KAFKA_KEY_BUFLEN];
+  char message[RLM_KAFKA_MESSAGE_BUFLEN];
+  char ref[RLM_KAFKA_REFERENCE_BUFLEN];
 
   radius_xlat(ref, sizeof(ref) - 1, request, inst->accounting.reference, NULL, NULL);
 
