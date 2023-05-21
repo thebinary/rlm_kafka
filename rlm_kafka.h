@@ -1,5 +1,5 @@
 typedef struct rlm_kafka_acct_section {
-  CONF_SECTION *ms;
+  CONF_SECTION *messages;
 
   char const *reference;
   char const *key;

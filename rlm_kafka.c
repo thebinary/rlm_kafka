@@ -102,7 +102,7 @@ static int mod_instantiate(CONF_SECTION *conf, void *instance)
   CONF_SECTION *cs = cf_section_sub_find(conf, "accounting");
   CONF_SECTION *pc = cf_section_sub_find(conf, "producer-config");
   
-  inst->accounting.ms = cf_section_sub_find(cs, "messages");
+  inst->accounting.messages = cf_section_sub_find(cs, "messages");
   
   // Create Producer Configuration
   inst->kconf = rd_kafka_conf_new();
@@ -179,7 +179,7 @@ static rlm_rcode_t CC_HINT(nonnull) mod_accounting(UNUSED void *instance, UNUSED
   radius_xlat(key, sizeof(key) - 1, request, inst->accounting.key, NULL, NULL);
   DEBUG3("rlm_kafka: message key=%s\n", key);
 
-  CONF_PAIR *cp = cf_pair_find(inst->accounting.ms, ref);
+  CONF_PAIR *cp = cf_pair_find(inst->accounting.messages, ref);
   const char *schema = cf_pair_value(cp);
 
   radius_xlat(message, sizeof(message) - 1, request, schema, NULL, NULL);
