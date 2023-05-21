@@ -2,9 +2,6 @@ typedef struct rlm_kafka_acct_section {
   CONF_SECTION *ms;
 
   char const *reference;
-  char const *start;
-  char const *stop;
-  char const *interim_update;
 } rlm_kafka_acct_section_t;
 
 /*
