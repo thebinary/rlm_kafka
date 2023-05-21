@@ -51,10 +51,6 @@ kafka {
  */
 
 static const CONF_PARSER messages_config[] = {
-  { "start", FR_CONF_OFFSET(PW_TYPE_STRING | PW_TYPE_XLAT, rlm_kafka_t, accounting.start), NULL },
-  { "stop", FR_CONF_OFFSET(PW_TYPE_STRING | PW_TYPE_XLAT, rlm_kafka_t, accounting.stop), NULL },
-  { "interim-update", FR_CONF_OFFSET(PW_TYPE_STRING | PW_TYPE_XLAT, rlm_kafka_t, accounting.interim_update), NULL },
-
   CONF_PARSER_TERMINATOR
 };
 
