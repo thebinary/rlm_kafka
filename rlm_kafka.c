@@ -60,6 +60,7 @@ static const CONF_PARSER producer_config[] = {
 
 static const CONF_PARSER acct_config[] = {
   { "reference", FR_CONF_OFFSET(PW_TYPE_STRING | PW_TYPE_XLAT, rlm_kafka_t, accounting.reference), NULL },
+  { "key", FR_CONF_OFFSET(PW_TYPE_STRING | PW_TYPE_XLAT, rlm_kafka_t, accounting.key), NULL},
   { "messages", FR_CONF_POINTER(PW_TYPE_SUBSECTION, NULL), (void const*) messages_config },
 
   CONF_PARSER_TERMINATOR
@@ -168,10 +169,14 @@ static rlm_rcode_t CC_HINT(nonnull) mod_accounting(UNUSED void *instance, UNUSED
 {
   rlm_kafka_t *inst = instance;
   rd_kafka_resp_err_t err;
+  char key[1024];
   char message[4096];
   char ref[25];
 
   radius_xlat(ref, sizeof(ref) - 1, request, inst->accounting.reference, NULL, NULL);
+  
+  radius_xlat(key, sizeof(key) - 1, request, inst->accounting.key, NULL, NULL);
+  DEBUG3("rlm_kafka: message key=%s\n", key);
 
   CONF_PAIR *cp = cf_pair_find(inst->accounting.ms, ref);
   const char *schema = cf_pair_value(cp);
@@ -179,10 +184,12 @@ static rlm_rcode_t CC_HINT(nonnull) mod_accounting(UNUSED void *instance, UNUSED
   radius_xlat(message, sizeof(message) - 1, request, schema, NULL, NULL);
   
   size_t len = strlen(message);
+  size_t key_len = strlen(key);
   
   err = rd_kafka_producev(inst->rk,
           RD_KAFKA_V_RKT(inst->rkt),
           RD_KAFKA_V_MSGFLAGS(RD_KAFKA_MSG_F_COPY),
+          RD_KAFKA_V_KEY(key, key_len),
           RD_KAFKA_V_VALUE(message, len),
           RD_KAFKA_V_OPAQUE(NULL),
           RD_KAFKA_V_END);
