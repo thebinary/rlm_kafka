@@ -31,18 +31,3 @@ typedef struct rlm_kafka_t {
 
 #define RLM_KAFKA_PROP_DEBUG(PROP, VALUE) DEBUG3("rlm_kafka: Setting producer property '"PROP"' to '%s'\n", VALUE)
 #define RLM_KAFKA_PROP_ERROR(PROP, ERR_STRING) ERROR("property="PROP", %s\n", ERR_STRING)
-
-/* Buffer Length for reference string used to select key for message XLAT to be used */
-#ifndef RLM_KAFKA_REFERENCE_BUFLEN
-  #define RLM_KAFKA_REFERENCE_BUFLEN 50
-#endif
-
-/* Buffer Length for kafka message key string */
-#ifndef RLM_KAFKA_KEY_BUFLEN
-  #define RLM_KAFKA_KEY_BUFLEN 1024
-#endif
-
-/* Buffer Length for kafka message value string */
-#ifndef RLM_KAFKA_MESSAGE_BUFLEN
-  #define RLM_KAFKA_MESSAGE_BUFLEN 4096
-#endif

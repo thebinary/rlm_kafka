@@ -170,19 +170,26 @@ static rlm_rcode_t CC_HINT(nonnull) mod_accounting(UNUSED void *instance, UNUSED
 {
   rlm_kafka_t *inst = instance;
   rd_kafka_resp_err_t err;
-  char key[RLM_KAFKA_KEY_BUFLEN];
-  char message[RLM_KAFKA_MESSAGE_BUFLEN];
-  char ref[RLM_KAFKA_REFERENCE_BUFLEN];
+  char *key = NULL;
+  char *message = NULL;
+  char *ref = NULL;
 
-  radius_xlat(ref, sizeof(ref) - 1, request, inst->accounting.reference, NULL, NULL);
+  if (radius_axlat(&ref, request, inst->accounting.reference, NULL, NULL) < 0) return RLM_MODULE_NOOP;
 
-  radius_xlat(key, sizeof(key) - 1, request, inst->accounting.key, NULL, NULL);
+  if (radius_axlat(&key, request, inst->accounting.key, NULL, NULL) < 0) {
+    talloc_free(ref);
+    return RLM_MODULE_NOOP;
+  }
   DEBUG3("rlm_kafka: message key=%s\n", key);
 
   CONF_PAIR *cp = cf_pair_find(inst->accounting.messages, ref);
   const char *schema = cf_pair_value(cp);
 
-  radius_xlat(message, sizeof(message) - 1, request, schema, NULL, NULL);
+  if (radius_axlat(&message, request, schema, NULL, NULL) < 0) {
+    talloc_free(ref);
+    talloc_free(key);
+    return RLM_MODULE_NOOP;
+  }
   
   size_t len = strlen(message);
   size_t key_len = strlen(key);
@@ -198,6 +205,10 @@ static rlm_rcode_t CC_HINT(nonnull) mod_accounting(UNUSED void *instance, UNUSED
     DEBUG3("rlm_kafka: Failed to produce to topic: %s: %s\n",
             inst->topic, rd_kafka_err2str(err));
   }
+
+  talloc_free(ref);
+  talloc_free(key);
+  talloc_free(message);
 
   /* non-blocking */
   DEBUG3("rlm_kafka: polling kafka");
