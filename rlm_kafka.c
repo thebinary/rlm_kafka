@@ -108,10 +108,7 @@ static int mod_instantiate(CONF_SECTION *conf, void *instance)
   inst->kconf = rd_kafka_conf_new();
   
   // Set Producer Configration Properties
-  if(rd_kafka_conf_set(inst->kconf, "bootstrap.servers", inst->bootstrap,
-		       errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK) {
-    RLM_KAFKA_PROP_ERROR("bootstrap.servers", errstr);
-  }
+  RLM_KAFKA_PROP_SET(inst->kconf, "bootstrap.servers", inst->bootstrap, errstr);
   
   if(inst->stats_filename) {
     DEBUG3("rlm_kafka: Setting instance as kafka opaque");
@@ -134,10 +131,7 @@ static int mod_instantiate(CONF_SECTION *conf, void *instance)
     if(cp) {
       char const *attr = cf_pair_attr(cp);
       char const *value = cf_pair_value(cp);
-      DEBUG3("rlm_kafka: Setting producer property '%s' as '%s'\n", attr, value);
-      if(rd_kafka_conf_set(inst->kconf, attr, value, errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK) {
-	      ERROR("rlm_kafka: property=%s, %s", attr, errstr);
-      }
+      RLM_KAFKA_PROP_SET(inst->kconf, attr, value, errstr);
     }
   } while(cp != NULL);
   
