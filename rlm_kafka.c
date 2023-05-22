@@ -180,7 +180,7 @@ static rlm_rcode_t CC_HINT(nonnull) mod_accounting(UNUSED void *instance, UNUSED
     talloc_free(ref);
     return RLM_MODULE_NOOP;
   }
-  DEBUG3("rlm_kafka: message key=%s\n", key);
+  RDEBUG3("message key=%s\n", key);
 
   CONF_PAIR *cp = cf_pair_find(inst->accounting.messages, ref);
   const char *schema = cf_pair_value(cp);
@@ -202,16 +202,13 @@ static rlm_rcode_t CC_HINT(nonnull) mod_accounting(UNUSED void *instance, UNUSED
           RD_KAFKA_V_OPAQUE(NULL),
           RD_KAFKA_V_END);
   if (err) {
-    DEBUG3("rlm_kafka: Failed to produce to topic: %s: %s\n",
+    RDEBUG3("Failed to produce to topic: %s: %s\n",
             inst->topic, rd_kafka_err2str(err));
   }
 
-  talloc_free(ref);
-  talloc_free(key);
-  talloc_free(message);
 
   /* non-blocking */
-  DEBUG3("rlm_kafka: polling kafka");
+  RDEBUG3("Polling kafka");
   rd_kafka_poll(inst->rk, 0);
 
   return RLM_MODULE_OK;
