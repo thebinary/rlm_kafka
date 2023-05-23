@@ -4,8 +4,16 @@ kafka {
 
       # Parameters to be set in section below are librdkafka configuration
       # https://docs.confluent.io/platform/current/clients/librdkafka/html/md_CONFIGURATION.html
-      producer-config {
+      # Section: Global configuration properties
+      global-config {
       	# linger.ms = 10
+      }
+
+      # Parameters to be set in section below are librdkafka configuration
+      # https://docs.confluent.io/platform/current/clients/librdkafka/html/md_CONFIGURATION.html
+      # Section: Global configuration properties
+      topic-config {
+            # request.required.acks = -1
       }
 
       $INCLUDE ${modconfdir}/kafka/default/jdbc/postgresql/messages.conf
