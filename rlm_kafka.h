@@ -27,9 +27,10 @@ typedef struct rlm_kafka_t {
   rlm_kafka_acct_section_t accounting;
 } rlm_kafka_t;
 
+#define MDEBUG3(FMT, __VARGS__...) DEBUG3("rlm_kafka: "FMT, ## __VARGS__)
+#define MERROR(FMT, __VARGS__...) ERROR("rlm_kafka: "FMT, ## __VARGS__)
 
-
-#define RLM_KAFKA_PROP_DEBUG(PROP, VALUE) DEBUG3("rlm_kafka: Setting producer property '%s=%s'\n", PROP, VALUE)
-#define RLM_KAFKA_PROP_ERROR(PROP, VALUE, ERR_STRING) ERROR("rlm_kafka: Error setting properry: '%s=%s' : %s\n", PROP, VALUE, ERR_STRING)
+#define RLM_KAFKA_PROP_DEBUG(PROP, VALUE) MDEBUG3("Setting producer property '%s=%s'\n", PROP, VALUE)
+#define RLM_KAFKA_PROP_ERROR(PROP, VALUE, ERR_STRING) MERROR("Error setting properry: '%s=%s' : %s\n", PROP, VALUE, ERR_STRING)
 
 #define RLM_KAFKA_PROP_SET(CONF, PROP, VALUE, BUF_ERRSTR) RLM_KAFKA_PROP_DEBUG(PROP, VALUE); if (rd_kafka_conf_set(CONF, PROP, VALUE, BUF_ERRSTR, sizeof(BUF_ERRSTR)) != RD_KAFKA_CONF_OK ) { RLM_KAFKA_PROP_ERROR(PROP, VALUE, BUF_ERRSTR); }

@@ -85,7 +85,7 @@ static const CONF_PARSER module_config[] = {
 
 static int stats_cb (rd_kafka_t *rk, char *json, size_t json_len,
 		     void *opaque) {
-  DEBUG3("rlm_kafka: stats callback");
+  DEBUG3("stats callback");
   rlm_kafka_t *inst = opaque;
   FILE *fp = inst->stats_file;
 
@@ -111,16 +111,16 @@ static int mod_instantiate(CONF_SECTION *conf, void *instance)
   RLM_KAFKA_PROP_SET(inst->kconf, "bootstrap.servers", inst->bootstrap, errstr);
   
   if(inst->stats_filename) {
-    DEBUG3("rlm_kafka: Setting instance as kafka opaque");
+    MDEBUG3("Setting instance as kafka opaque");
     rd_kafka_conf_set_opaque(inst->kconf, inst);
 
-    DEBUG3("rlm_kafka: Opening statistics file for writing: %s", inst->stats_filename);
+    MDEBUG3("Opening statistics file for writing: %s", inst->stats_filename);
     inst->stats_file = fopen(inst->stats_filename, "a");
     if(inst->stats_file == NULL) {
-      ERROR("rlm_kafka: error opening statistics file: %s", inst->stats_filename);
+      MERROR("error opening statistics file: %s", inst->stats_filename);
     }
 
-    DEBUG3("rlm_kafka: Registering statistics callback");
+    MDEBUG3("Registering statistics callback");
     rd_kafka_conf_set_stats_cb(inst->kconf, stats_cb);
   }
 
@@ -135,21 +135,21 @@ static int mod_instantiate(CONF_SECTION *conf, void *instance)
     }
   } while(cp != NULL);
   
-  DEBUG3("rlm_kafka: Kafka config:");
+  MDEBUG3("Kafka config:");
   const char **arr;
   size_t cnt;
   arr = rd_kafka_conf_dump(inst->kconf, &cnt);
   for (int i = 0; i < (int)cnt; i += 2)
-	  DEBUG3("rlm_kafka: \t%s = %s", arr[i], arr[i + 1]);
+	  MDEBUG3("\t%s = %s", arr[i], arr[i + 1]);
 
   // Create Producer
   inst->rk = rd_kafka_new(RD_KAFKA_PRODUCER, inst->kconf, errstr, sizeof(errstr));
   if (!inst->rk) {
-    ERROR("rlm_kafka: Failed to create new producer: %s\n", errstr);
+    MERROR("Failed to create new producer: %s\n", errstr);
     return -1;
   }
   
-  DEBUG3("rlm_kafka: Creating instance for topic: %s", inst->topic);
+  MDEBUG3("Creating instance for topic: %s", inst->topic);
   inst->rkt = rd_kafka_topic_new(inst->rk, inst->topic, NULL);
   
   return RLM_MODULE_OK;
@@ -218,14 +218,14 @@ static int mod_detach(UNUSED void *instance)
   rlm_kafka_t *inst = instance;
 
   if(inst->stats_file) {
-    DEBUG3("rlm_kafka: Closing statistics file");
+    MDEBUG3("Closing statistics file");
     fclose(inst->stats_file);
   }
-  DEBUG3("rlm_kafka: Flushing kafka queue");
+  MDEBUG3("Flushing kafka queue");
   rd_kafka_flush(inst->rk, 10*1000);
-  DEBUG3("rlm_kafka: Releasing kafka topic");
+  MDEBUG3("Releasing kafka topic");
   rd_kafka_topic_destroy(inst->rkt);
-  DEBUG3("rlm_kafka: Stopping kafka producer");
+  MDEBUG3("Stopping kafka producer");
   rd_kafka_destroy(inst->rk);
   return 0;
 }
