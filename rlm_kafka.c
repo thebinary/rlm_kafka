@@ -147,10 +147,10 @@ static int mod_instantiate(CONF_SECTION *conf, void *instance)
     }
   } while(cp != NULL);
 
-  MDEBUG3("Kafka global configuration:");
+  MDEBUG4("Kafka global configuration:");
   arr = rd_kafka_conf_dump(inst->kconf, &cnt);
   for (int i = 0; i < (int)cnt; i += 2)
-	  MDEBUG3("\t%s = %s", arr[i], arr[i + 1]);
+	  MDEBUG4("\t%s = %s", arr[i], arr[i + 1]);
 
   // Create Producer
   inst->rk = rd_kafka_new(RD_KAFKA_PRODUCER, inst->kconf, errstr, sizeof(errstr));
@@ -173,10 +173,10 @@ static int mod_instantiate(CONF_SECTION *conf, void *instance)
     }
   } while(cp != NULL);
 
-  MDEBUG3("Kafka topic configuration:");
+  MDEBUG4("Kafka topic configuration:");
   arr = rd_kafka_topic_conf_dump(inst->tconf, &cnt);
   for (int i = 0; i < (int)cnt; i += 2)
-	  MDEBUG3("\t%s = %s", arr[i], arr[i + 1]);
+	  MDEBUG4("\t%s = %s", arr[i], arr[i + 1]);
 
   MDEBUG3("Creating instance for topic: %s", inst->topic);
   inst->rkt = rd_kafka_topic_new(inst->rk, inst->topic, inst->tconf);

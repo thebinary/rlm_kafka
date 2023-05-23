@@ -29,6 +29,7 @@ typedef struct rlm_kafka_t {
 } rlm_kafka_t;
 
 #define MDEBUG3(FMT, __VARGS__...) DEBUG3("rlm_kafka: "FMT, ## __VARGS__)
+#define MDEBUG4(FMT, __VARGS__...) DEBUG4("rlm_kafka: "FMT, ## __VARGS__)
 #define MERROR(FMT, __VARGS__...) ERROR("rlm_kafka: "FMT, ## __VARGS__)
 
 #define RLM_KAFKA_PROP_DEBUG(PROP, VALUE) MDEBUG3("Setting producer property '%s=%s'\n", PROP, VALUE)
