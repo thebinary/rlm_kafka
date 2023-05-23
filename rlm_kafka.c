@@ -36,8 +36,11 @@ Configuration example:
 kafka {
     bootstrap-servers = "localhost:9092"
     topic = "radacct"
-    producer-config {
-         ...
+    global-config {
+      ...
+    }
+    topic-config {
+      ...
     }
     accounting {
        reference = "<packet type xlat>"
@@ -45,7 +48,7 @@ kafka {
        messages {
           start = "..."
           stop = "..."
-	  interim-update = "..."
+	        interim-update = "..."
        }
     }
 }
@@ -55,7 +58,11 @@ static const CONF_PARSER messages_config[] = {
   CONF_PARSER_TERMINATOR
 };
 
-static const CONF_PARSER producer_config[] = {
+static const CONF_PARSER global_config[] = {
+  CONF_PARSER_TERMINATOR
+};
+
+static const CONF_PARSER topic_config[] = {
   CONF_PARSER_TERMINATOR
 };
 
@@ -76,7 +83,8 @@ static const CONF_PARSER stats_config[] = {
 static const CONF_PARSER module_config[] = {
   { "bootstrap-servers", FR_CONF_OFFSET(PW_TYPE_STRING | PW_TYPE_REQUIRED, rlm_kafka_t, bootstrap), NULL },
   { "topic", FR_CONF_OFFSET(PW_TYPE_STRING | PW_TYPE_REQUIRED, rlm_kafka_t, topic), NULL },
-  { "producer-config", FR_CONF_POINTER(PW_TYPE_SUBSECTION, NULL), (void const*) producer_config },
+  { "global-config", FR_CONF_POINTER(PW_TYPE_SUBSECTION, NULL), (void const*) global_config },
+  { "topic-config", FR_CONF_POINTER(PW_TYPE_SUBSECTION, NULL), (void const*) topic_config },
   { "accounting", FR_CONF_POINTER(PW_TYPE_SUBSECTION, NULL), (void const*) acct_config },
   { "statistics", FR_CONF_POINTER(PW_TYPE_SUBSECTION, NULL), (void const*) stats_config },
 
@@ -100,14 +108,18 @@ static int mod_instantiate(CONF_SECTION *conf, void *instance)
   char errstr[512];
   CONF_PAIR *cp = NULL;
   CONF_SECTION *cs = cf_section_sub_find(conf, "accounting");
-  CONF_SECTION *pc = cf_section_sub_find(conf, "producer-config");
+  CONF_SECTION *gc = cf_section_sub_find(conf, "global-config");
+  CONF_SECTION *tc = cf_section_sub_find(conf, "topic-config");
+
+  const char **arr;
+  size_t cnt;
   
   inst->accounting.messages = cf_section_sub_find(cs, "messages");
   
-  // Create Producer Configuration
+  // Create Producer Global Configuration
   inst->kconf = rd_kafka_conf_new();
   
-  // Set Producer Configration Properties
+  // Set Producer Boostrap Servers
   RLM_KAFKA_PROP_SET(inst->kconf, "bootstrap.servers", inst->bootstrap, errstr);
   
   if(inst->stats_filename) {
@@ -124,20 +136,18 @@ static int mod_instantiate(CONF_SECTION *conf, void *instance)
     rd_kafka_conf_set_stats_cb(inst->kconf, stats_cb);
   }
 
-  /* Search configuration items in producer conf_section
+  /* Search configuration items in global conf_section
      and set the property of kafka producer */
   do {
-    cp = cf_pair_find_next(pc, cp, NULL);
+    cp = cf_pair_find_next(gc, cp, NULL);
     if(cp) {
       char const *attr = cf_pair_attr(cp);
       char const *value = cf_pair_value(cp);
       RLM_KAFKA_PROP_SET(inst->kconf, attr, value, errstr);
     }
   } while(cp != NULL);
-  
-  MDEBUG3("Kafka config:");
-  const char **arr;
-  size_t cnt;
+
+  MDEBUG3("Kafka global configuration:");
   arr = rd_kafka_conf_dump(inst->kconf, &cnt);
   for (int i = 0; i < (int)cnt; i += 2)
 	  MDEBUG3("\t%s = %s", arr[i], arr[i + 1]);
@@ -149,8 +159,27 @@ static int mod_instantiate(CONF_SECTION *conf, void *instance)
     return -1;
   }
   
+  // Initialize Topic Config
+  inst->tconf = rd_kafka_topic_conf_new();
+
+  /* Search configuration items in topic conf_section
+     and set the property of kafka producer for topic */
+  do {
+    cp = cf_pair_find_next(tc, cp, NULL);
+    if(cp) {
+      char const *attr = cf_pair_attr(cp);
+      char const *value = cf_pair_value(cp);
+      RLM_KAFKA_TOPIC_PROP_SET(inst->tconf, attr, value, errstr);
+    }
+  } while(cp != NULL);
+
+  MDEBUG3("Kafka topic configuration:");
+  arr = rd_kafka_topic_conf_dump(inst->tconf, &cnt);
+  for (int i = 0; i < (int)cnt; i += 2)
+	  MDEBUG3("\t%s = %s", arr[i], arr[i + 1]);
+
   MDEBUG3("Creating instance for topic: %s", inst->topic);
-  inst->rkt = rd_kafka_topic_new(inst->rk, inst->topic, NULL);
+  inst->rkt = rd_kafka_topic_new(inst->rk, inst->topic, inst->tconf);
   
   return RLM_MODULE_OK;
 }

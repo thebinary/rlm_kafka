@@ -23,6 +23,7 @@ typedef struct rlm_kafka_t {
   rd_kafka_t *rk;
   rd_kafka_topic_t *rkt;
   rd_kafka_conf_t *kconf;
+  rd_kafka_topic_conf_t *tconf;
 
   rlm_kafka_acct_section_t accounting;
 } rlm_kafka_t;
@@ -32,5 +33,8 @@ typedef struct rlm_kafka_t {
 
 #define RLM_KAFKA_PROP_DEBUG(PROP, VALUE) MDEBUG3("Setting producer property '%s=%s'\n", PROP, VALUE)
 #define RLM_KAFKA_PROP_ERROR(PROP, VALUE, ERR_STRING) MERROR("Error setting properry: '%s=%s' : %s\n", PROP, VALUE, ERR_STRING)
-
 #define RLM_KAFKA_PROP_SET(CONF, PROP, VALUE, BUF_ERRSTR) RLM_KAFKA_PROP_DEBUG(PROP, VALUE); if (rd_kafka_conf_set(CONF, PROP, VALUE, BUF_ERRSTR, sizeof(BUF_ERRSTR)) != RD_KAFKA_CONF_OK ) { RLM_KAFKA_PROP_ERROR(PROP, VALUE, BUF_ERRSTR); }
+
+#define RLM_KAFKA_TOPIC_PROP_DEBUG(PROP, VALUE) MDEBUG3("Setting topic property '%s=%s'\n", PROP, VALUE)
+#define RLM_KAFKA_TOPIC_PROP_ERROR(PROP, VALUE, ERR_STRING) MERROR("Error setting topic property: '%s=%s' : %s\n", PROP, VALUE, ERR_STRING)
+#define RLM_KAFKA_TOPIC_PROP_SET(CONF, PROP, VALUE, BUF_ERRSTR) RLM_KAFKA_TOPIC_PROP_DEBUG(PROP, VALUE); if (rd_kafka_topic_conf_set(CONF, PROP, VALUE, BUF_ERRSTR, sizeof(BUF_ERRSTR)) != RD_KAFKA_CONF_OK ) { RLM_KAFKA_TOPIC_PROP_ERROR(PROP, VALUE, BUF_ERRSTR); }
